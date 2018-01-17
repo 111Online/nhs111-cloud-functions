@@ -17,14 +17,13 @@ namespace NHS111.Cloud.Functions
         {
             log.Info($"Activity was triggered!");
 
-            //var jsonContent = await req.Content.ReadAsStringAsync();
             var data = JsonConvert.DeserializeObject<AnalyticsData>(jsonContent);
             var date = data.Date != null
                 ? Convert.ToDateTime(data.Date).ToString("yyyy-MM-dd")
                 : DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd");
 
             var str = ConfigurationManager.ConnectionStrings["SqlDbConnection"].ConnectionString;
-            IEnumerable<AnalyticsDataRecord> dataRecords;
+            var dataRecords = new List<AnalyticsDataRecord>();
             using (var conn = new SqlConnection(str))
             {
                 conn.Open();
@@ -39,35 +38,31 @@ namespace NHS111.Cloud.Functions
 
                     var reader = cmd.ExecuteReader();
                     log.Info($"Executed stored procedure");
-                    dataRecords = GetCaseRecords(reader, log);
+
+                    log.Info($"Looping through reader");
+                    while (reader.Read())
+                    {
+                        var dataRecord = new AnalyticsDataRecord
+                        {
+                            JourneyId = reader.GetGuid(0),
+                            Age = Convert.ToInt32(reader.GetString(1)),
+                            Gender = reader.SafeGetString(2),
+                            Stp = reader.SafeGetString(3),
+                            Ccg = reader.SafeGetString(4),
+                            TriageStart = reader.GetDateTime(5),
+                            TriageEnd = reader.GetDateTime(6),
+                            StartPathwayTitle = reader.SafeGetString(7),
+                            Dx = reader.SafeGetString(8),
+                            FinalDispositionGroup = reader.SafeGetString(9),
+                            Itk = reader.SafeGetString(10),
+                            ItkSelected = reader.SafeGetString(11)
+                        };
+                        dataRecords.Add(dataRecord);
+                    }
                 }
             }
 
             return JsonConvert.SerializeObject(dataRecords);
-        }
-
-        private static IEnumerable<AnalyticsDataRecord> GetCaseRecords(SqlDataReader reader, TraceWriter log)
-        {
-            log.Info($"Looping through reader");
-            while (reader.Read())
-            {
-                var dataRecord = new AnalyticsDataRecord
-                {
-                    JourneyId = reader.GetGuid(0),
-                    Age = Convert.ToInt32(reader.GetString(1)),
-                    Gender = reader.SafeGetString(2),
-                    Stp = reader.SafeGetString(3),
-                    Ccg = reader.SafeGetString(4),
-                    TriageStart = reader.GetDateTime(5),
-                    TriageEnd = reader.GetDateTime(6),
-                    StartPathwayTitle = reader.SafeGetString(7),
-                    Dx = reader.SafeGetString(8),
-                    FinalDispositionGroup = reader.SafeGetString(9),
-                    Itk = reader.SafeGetString(10),
-                    ItkSelected = reader.SafeGetString(11)
-                };
-                yield return dataRecord;
-            }
         }
 
         public static string SafeGetString(this SqlDataReader reader, int colIndex)

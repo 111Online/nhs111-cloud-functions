@@ -17,43 +17,31 @@ namespace NHS111.Cloud.Functions
     public static class CreateAnalyticsBlob
     {
         [FunctionName("CreateAnalyticsBlob")]
-        public static async Task<object> Run([HttpTrigger(WebHookType = "genericJson")]HttpRequestMessage req, TraceWriter log)
+        public static void Run([ActivityTrigger]string jsonContent, TraceWriter log)
         {
-            log.Info($"Webhook was triggered!");
-
-            var jsonContent = await req.Content.ReadAsStringAsync();
+            log.Info($"Activity was triggered!");
             var blob = JsonConvert.DeserializeObject<AnalyticsBlob>(jsonContent);
 
-            await CreateBlob(blob, log);
-            return req.CreateResponse(HttpStatusCode.OK);
-        }
+            if (!blob.DataRecords.Any()) return;
 
-        private static async Task CreateBlob(AnalyticsBlob blob, TraceWriter log)
-        {
-            if (blob.DataRecords.Any())
+            var connectionString = ConfigurationManager.ConnectionStrings["AzureContainerConnection"].ConnectionString;
+            var storageAccount = CloudStorageAccount.Parse(connectionString);
+
+            var client = storageAccount.CreateCloudBlobClient();
+
+            var container = client.GetContainerReference("analytics");
+            container.CreateIfNotExists();
+
+            var containerBlob = container.GetBlockBlobReference(blob.BlobName);
+            containerBlob.Properties.ContentType = "application/text";
+            containerBlob.Metadata.Add("emailrecipients", blob.ToEmailRecipients);
+
+            var caseRecordsCsv = CsvSerializer.SerializeToCsv(blob.DataRecords);
+            using (Stream stream = new MemoryStream(Encoding.UTF8.GetBytes(caseRecordsCsv)))
             {
-                var connectionString = ConfigurationManager.ConnectionStrings["AzureContainerConnection"].ConnectionString;
-                var storageAccount = CloudStorageAccount.Parse(connectionString);
-
-                var client = storageAccount.CreateCloudBlobClient();
-                var container = client.GetContainerReference("analytics");
-
-                await container.CreateIfNotExistsAsync();
-
-                
-                var containerBlob = container.GetBlockBlobReference(blob.BlobName);
-
-                containerBlob.Properties.ContentType = "application/text";
-                containerBlob.Metadata.Add("emailrecipients", blob.ToEmailRecipients);
-
-                var caseRecordsCsv = CsvSerializer.SerializeToCsv(blob.DataRecords);
-                using (Stream stream = new MemoryStream(Encoding.UTF8.GetBytes(caseRecordsCsv)))
-                {
-                    log.Info($"Uploading blob {blob.BlobName}");
-                    await containerBlob.UploadFromStreamAsync(stream);
-                }
+                log.Info($"Uploading blob {blob.BlobName}");
+                containerBlob.UploadFromStream(stream);
             }
         }
-
     }
 }
