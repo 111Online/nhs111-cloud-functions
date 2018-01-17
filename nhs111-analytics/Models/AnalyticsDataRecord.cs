@@ -3,8 +3,8 @@ using System.Runtime.Serialization;
 
 namespace NHS111.Cloud.Functions.Models
 {
-    [DataContract(Name = "CaseRecord", Namespace = "NHS111.Cloud.Functions.Models")]
-    public class CaseRecord
+    [DataContract(Name = "AnalyticsDataRecord", Namespace = "NHS111.Cloud.Functions.Models")]
+    public class AnalyticsDataRecord
     {
         [DataMember]
         public Guid JourneyId { get; set; }
