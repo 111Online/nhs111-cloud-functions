@@ -32,6 +32,7 @@ namespace NHS111.Cloud.Functions
             {
                 ToEmailRecipients = email.ToEmailRecipients,
                 Date = email.Date,
+                Stp = email.Stp,
                 DataRecords = JsonConvert.DeserializeObject<IEnumerable<AnalyticsDataRecord>>(jsonDataRecords)
             };
             log.Info($"Calling function CreateAnalyticsBlob");

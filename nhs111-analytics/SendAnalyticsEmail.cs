@@ -21,10 +21,10 @@ namespace NHS111.Cloud.Functions
 
             var credentials = new WebCredentials(username, password);
             var date = name.Substring(name.IndexOf('-') + 1);
-            SendEmail(credentials, ConfigurationManager.AppSettings["EmailFromAddress"], analyticsBlob.Metadata["emailrecipients"], date, analyticsBlob);
+            SendEmail(credentials, ConfigurationManager.AppSettings["EmailFromAddress"], analyticsBlob.Metadata["emailrecipients"], name, date, analyticsBlob);
         }
 
-        private static async void SendEmail(ExchangeCredentials credentials, string fromAddress, string recipients, string date, CloudBlob analyticsBlob)
+        private static async void SendEmail(ExchangeCredentials credentials, string fromAddress, string recipients, string filename, string date, CloudBlob analyticsBlob)
         {
             var service = new ExchangeService
             {
@@ -39,7 +39,7 @@ namespace NHS111.Cloud.Functions
                 Subject = $"Data extract for {date} has been created",
                 Body = new MessageBody(BodyType.HTML, $"<h1>Data generated at {DateTime.Now:dd/MM/yyyy hh:mm:ss}</h1>")
             };
-            message.Attachments.AddFileAttachment($"all-data-{date}.csv", await analyticsBlob.OpenReadAsync());
+            message.Attachments.AddFileAttachment($"{filename}.csv", await analyticsBlob.OpenReadAsync());
             
             foreach (var recipient in recipients.Split(';'))
                  message.ToRecipients.Add(recipient);

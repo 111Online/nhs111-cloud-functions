@@ -14,6 +14,9 @@ namespace NHS111.Cloud.Functions.Models
         public string Date { get; set; }
 
         [DataMember]
+        public string Stp { get; set; }
+
+        [DataMember]
         public IEnumerable<AnalyticsDataRecord> DataRecords { get; set; }
 
         [DataMember]
@@ -22,7 +25,7 @@ namespace NHS111.Cloud.Functions.Models
             get
             {
                 var guid = Guid.NewGuid().ToString("n");
-                return $"{guid}-{Date}.csv";
+                return !string.IsNullOrEmpty(Stp) ? $"{guid}-{Stp}-{Date}.csv" : $"{guid}-{Date}.csv";
             }
         }
 

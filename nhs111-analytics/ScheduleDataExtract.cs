@@ -12,12 +12,12 @@ namespace NHS111.Cloud.Functions
     public static class ScheduleDataExtract
     {
         [FunctionName("ScheduleDataExtract")]
-        public static async Task Run([TimerTrigger("0 * * * * *"), Disable]TimerInfo timer, [OrchestrationClient]DurableOrchestrationClient starter, [Table("AnalyticsEmailTable", "AzureContainerConnection")]IQueryable<AnalyticsEmail> analyticsEmails, [Table("AnalyticsEmailTable", "AzureContainerConnection")]CloudTable outTable, TraceWriter log)
+        public static async Task Run([TimerTrigger("0 */15 * * * *")]TimerInfo timer, [OrchestrationClient]DurableOrchestrationClient starter, [Table("AnalyticsEmailTable", "AzureContainerConnection")]IQueryable<AnalyticsEmail> analyticsEmails, [Table("AnalyticsEmailTable", "AzureContainerConnection")]CloudTable outTable, TraceWriter log)
         {
             log.Info($"C# Timer trigger function executed at: {DateTime.Now}");
             foreach (var analyticsEmail in analyticsEmails)
             {
-                log.Info($"Stp={analyticsEmail.PartitionKey}, Ccg={analyticsEmail.RowKey}, ToEmailRecipients={analyticsEmail.ToEmailRecipients}, Date={analyticsEmail.Date}");
+                log.Info($"Stp={analyticsEmail.Stp}, Ccg={analyticsEmail.Ccg}, ToEmailRecipients={analyticsEmail.ToEmailRecipients}, Date={analyticsEmail.Date}");
                 var instanceId = await starter.StartNewAsync("DailyDataSend", JsonConvert.SerializeObject(analyticsEmail));
                 log.Info($"Started orchestration with ID = '{instanceId}'.");
 
