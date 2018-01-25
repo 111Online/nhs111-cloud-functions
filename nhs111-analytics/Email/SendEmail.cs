@@ -10,6 +10,7 @@ using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Exchange.WebServices.Data;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
+using Newtonsoft.Json;
 using NHS111.Cloud.Functions.Models.Email;
 
 namespace NHS111.Cloud.Functions.Email
@@ -17,11 +18,10 @@ namespace NHS111.Cloud.Functions.Email
     public static class SendEmail
     {
         [FunctionName("NHS111OnlineMailSender")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "post")]HttpRequestMessage req, TraceWriter log)
+        public static async Task<HttpResponseMessage> Run([ActivityTrigger]string jsonContent, TraceWriter log)
         {
             log.Info("C# NHS111OnlineMailSender trigger function processed a request.");
-
-            var sendMail = await req.Content.ReadAsAsync<SendMail>();
+            var sendMail = JsonConvert.DeserializeObject<SendMail>(jsonContent);
             
             if (sendMail.ToEmails == null || sendMail.Body == null || sendMail.Subject == null)
             {
