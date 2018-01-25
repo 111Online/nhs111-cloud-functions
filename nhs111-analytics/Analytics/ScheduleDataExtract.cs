@@ -18,7 +18,7 @@ namespace NHS111.Cloud.Functions.Analytics
             foreach (var analyticsEmail in analyticsEmails)
             {
                 log.Info($"Stp={analyticsEmail.Stp}, Ccg={analyticsEmail.Ccg}, ToEmailRecipients={analyticsEmail.ToEmailRecipients}, Date={analyticsEmail.Date}");
-                var instanceId = await starter.StartNewAsync("DailyDataSend", JsonConvert.SerializeObject(analyticsEmail));
+                var instanceId = await starter.StartNewAsync("OrchestrateDailyDataSend", JsonConvert.SerializeObject(analyticsEmail));
                 log.Info($"Started orchestration with ID = '{instanceId}'.");
 
                 var updateAnalyticsEmail = GetTableEntity(outTable, analyticsEmail.PartitionKey, analyticsEmail.RowKey);
