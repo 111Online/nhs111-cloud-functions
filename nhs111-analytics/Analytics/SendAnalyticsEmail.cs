@@ -23,8 +23,6 @@ namespace NHS111.Cloud.Functions.Analytics
             var subject = $"Data extract for {date} has been created";
             log.Info($"ToEmailRecipients={analyticsBlob.Metadata["emailrecipients"]}, Subject={subject}");
 
-           
-
             var sendMail = new SendMail
             {
                 ToEmails = analyticsBlob.Metadata["emailrecipients"].Split(';'),
