@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -56,7 +57,7 @@ namespace NHS111.Cloud.Functions.Email
                     message.CcRecipients.Add(ccEmail);
 
                 foreach (var attachment in sendMail.Attachments)
-                    message.Attachments.AddFileAttachment(attachment.Key, attachment.Value);
+                    message.Attachments.AddFileAttachment(attachment.Key, Encoding.ASCII.GetBytes(attachment.Value));
 
                 try
                 {
