@@ -1,12 +1,11 @@
 using System;
 using System.Configuration;
-using System.IO;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Exchange.WebServices.Data;
 using Microsoft.WindowsAzure.Storage.Blob;
 
-namespace NHS111.Cloud.Functions
+namespace NHS111.Cloud.Functions.Analytics
 {
     public static class SendAnalyticsEmail
     {

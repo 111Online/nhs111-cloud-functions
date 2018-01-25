@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace NHS111.Cloud.Functions.Models
+namespace NHS111.Cloud.Functions.Models.Analytics
 {
     [DataContract(Name = "AnalyticsDataRecord", Namespace = "NHS111.Cloud.Functions.Models")]
     public class AnalyticsDataRecord

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace NHS111.Cloud.Functions.Models
+namespace NHS111.Cloud.Functions.Models.Analytics
 {
     [DataContract(Name = "AnalyticsBlob", Namespace = "NHS111.Cloud.Functions.Models")]
     public class AnalyticsBlob

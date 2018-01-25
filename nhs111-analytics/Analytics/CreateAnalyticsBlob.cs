@@ -1,18 +1,15 @@
 using System.Configuration;
 using System.IO;
 using System.Linq;
-using System.Net;
-using Newtonsoft.Json;
-using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.WindowsAzure.Storage;
-using NHS111.Cloud.Functions.Models;
+using Newtonsoft.Json;
+using NHS111.Cloud.Functions.Models.Analytics;
 using ServiceStack.Text;
 
-namespace NHS111.Cloud.Functions
+namespace NHS111.Cloud.Functions.Analytics
 {
     public static class CreateAnalyticsBlob
     {
