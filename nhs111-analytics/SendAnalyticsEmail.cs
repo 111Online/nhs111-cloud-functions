@@ -20,10 +20,11 @@ namespace NHS111.Cloud.Functions
             var password = ConfigurationManager.AppSettings["Office365Password"];
 
             var credentials = new WebCredentials(username, password);
-            SendEmail(credentials, ConfigurationManager.AppSettings["EmailFromAddress"], analyticsBlob.Metadata["emailrecipients"], $"{name} has been updated/created", analyticsBlob);
+            var date = name.Substring(name.IndexOf('-') + 1);
+            SendEmail(credentials, ConfigurationManager.AppSettings["EmailFromAddress"], analyticsBlob.Metadata["emailrecipients"], name, date, analyticsBlob);
         }
 
-        private static async void SendEmail(ExchangeCredentials credentials, string fromAddress, string recipients, string subject, CloudBlockBlob analyticsBlob)
+        private static async void SendEmail(ExchangeCredentials credentials, string fromAddress, string recipients, string filename, string date, CloudBlob analyticsBlob)
         {
             var service = new ExchangeService
             {
@@ -35,10 +36,10 @@ namespace NHS111.Cloud.Functions
             var message = new EmailMessage(service)
             {
                 From = fromAddress,
-                Subject = subject,
-                Body = new MessageBody(BodyType.HTML, $"<h1>This is a test, generated at ${DateTime.Now}</h1>")
+                Subject = $"Data extract for {date} has been created",
+                Body = new MessageBody(BodyType.HTML, $"<h1>Data generated at {DateTime.Now:dd/MM/yyyy hh:mm:ss}</h1>")
             };
-            message.Attachments.AddFileAttachment("all-data.csv", await analyticsBlob.OpenReadAsync());
+            message.Attachments.AddFileAttachment($"{filename}.csv", await analyticsBlob.OpenReadAsync());
             
             foreach (var recipient in recipients.Split(';'))
                  message.ToRecipients.Add(recipient);
