@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
-using Microsoft.Exchange.WebServices.Data;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json;
 using NHS111.Cloud.Functions.Models.Email;
@@ -24,15 +23,25 @@ namespace NHS111.Cloud.Functions.Analytics
             var subject = $"Data extract for {date} has been created";
             log.Info($"ToEmailRecipients={analyticsBlob.Metadata["emailrecipients"]}, Subject={subject}");
 
+           
+
             var sendMail = new SendMail
             {
                 ToEmails = analyticsBlob.Metadata["emailrecipients"].Split(';'),
                 Subject = subject,
                 Body = $"<h1>Data generated at {DateTime.Now:dd/MM/yyyy hh:mm:ss}</h1>",
-                Attachments = new[] { new KeyValuePair<string, Stream>($"{name}.csv", await analyticsBlob.OpenReadAsync()) }
+                Attachments = new[] { new KeyValuePair<string, string>($"{name}.csv", await GetBlobAsStringAsync(analyticsBlob)) }
             };
             var instanceId = await starter.StartNewAsync("NHS111OnlineMailSender", JsonConvert.SerializeObject(sendMail));
             log.Info($"Started orchestration with ID = '{instanceId}'.");
+        }
+
+        public static async Task<string> GetBlobAsStringAsync(CloudBlockBlob blob)
+        {
+            var blobBytes = new byte[blob.StreamWriteSizeInBytes];
+            var blobRead = await blob.OpenReadAsync();
+            blobRead.Read(blobBytes, 0, (int)blobRead.Length);
+            return Encoding.ASCII.GetString(blobBytes);
         }
     }
 }

@@ -19,6 +19,6 @@ namespace NHS111.Cloud.Functions.Models.Email
         public string Subject { get; set; }
 
         [DataMember]
-        public KeyValuePair<string, Stream>[] Attachments { get; set; }
+        public KeyValuePair<string, string>[] Attachments { get; set; }
     }
 }
