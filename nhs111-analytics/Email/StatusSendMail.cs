@@ -14,15 +14,20 @@ namespace NHS111.Cloud.Functions.Email
         {
             log.Info($"C# StatusSendMail trigger function processed for {instanceId}.");
             var status = await starter.GetStatusAsync(instanceId);
-            
+
+            if (status == null)
+                return req.CreateErrorResponse(HttpStatusCode.InternalServerError, $"The given instance {instanceId} could not be found");
+
             switch (status.RuntimeStatus)
             {
                 case OrchestrationRuntimeStatus.Completed:
                     return req.CreateResponse(HttpStatusCode.OK, status);
-                case OrchestrationRuntimeStatus.Failed:
-                    return req.CreateResponse(HttpStatusCode.InternalServerError, status);
-                default:
+                case OrchestrationRuntimeStatus.Pending:
+                case OrchestrationRuntimeStatus.Running:
+                case OrchestrationRuntimeStatus.ContinuedAsNew:
                     return req.CreateResponse(HttpStatusCode.Accepted, status);
+                default:
+                    return req.CreateResponse(HttpStatusCode.InternalServerError, status);
             }
         }
     }
