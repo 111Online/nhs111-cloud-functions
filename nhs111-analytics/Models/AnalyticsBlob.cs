@@ -1,4 +1,6 @@
-﻿using System.Runtime.Serialization;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace NHS111.Cloud.Functions.Models
 {
@@ -15,6 +17,17 @@ namespace NHS111.Cloud.Functions.Models
         public string Stp { get; set; }
 
         [DataMember]
-        public string Ccg { get; set; }
+        public IEnumerable<AnalyticsDataRecord> DataRecords { get; set; }
+
+        [DataMember]
+        public string BlobName
+        {
+            get
+            {
+                var guid = Guid.NewGuid().ToString("n");
+                return !string.IsNullOrEmpty(Stp) ? $"{guid}-{Stp}-{Date}.csv" : $"{guid}-{Date}.csv";
+            }
+        }
+
     }
 }
