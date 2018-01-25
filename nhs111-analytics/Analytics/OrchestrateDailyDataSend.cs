@@ -7,9 +7,9 @@ using NHS111.Cloud.Functions.Models.Analytics;
 
 namespace NHS111.Cloud.Functions.Analytics
 {
-    public static class DailyDataSend
+    public static class OrchestrateDailyDataSend
     {
-        [FunctionName("DailyDataSend")]
+        [FunctionName("OrchestrateDailyDataSend")]
         public static async Task<string>Run([OrchestrationTrigger] DurableOrchestrationContext orchestrationClient, TraceWriter log)
         {
             var jsonEmail = orchestrationClient.GetInput<string>();
