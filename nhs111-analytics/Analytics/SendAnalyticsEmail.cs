@@ -39,7 +39,7 @@ namespace NHS111.Cloud.Functions.Analytics
             var blobBytes = new byte[blob.StreamWriteSizeInBytes];
             var blobRead = await blob.OpenReadAsync();
             blobRead.Read(blobBytes, 0, (int)blobRead.Length);
-            return Encoding.ASCII.GetString(blobBytes);
+            return Convert.ToBase64String(blobBytes);
         }
     }
 }
