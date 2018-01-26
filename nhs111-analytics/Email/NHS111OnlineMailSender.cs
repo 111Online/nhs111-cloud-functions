@@ -57,7 +57,7 @@ namespace NHS111.Cloud.Functions.Email
                     message.CcRecipients.Add(ccEmail);
 
                 foreach (var attachment in sendMail.Attachments)
-                    message.Attachments.AddFileAttachment(attachment.Key, Encoding.ASCII.GetBytes(attachment.Value));
+                    message.Attachments.AddFileAttachment(attachment.Key, Convert.FromBase64String(attachment.Value));
 
                 try
                 {
