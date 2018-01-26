@@ -35,8 +35,8 @@ namespace NHS111.Cloud.Functions.Email
                 var azureServiceTokenProvider = new AzureServiceTokenProvider();
                 var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
 
-                var nhs111OnlineMailAccount = await keyVaultClient.GetSecretAsync("https://nhsmailemailacctkv.vault.azure.net/secrets/nhs111OnlineMailAccount").ConfigureAwait(false);
-                var nhs111OnlineMailPassword = await keyVaultClient.GetSecretAsync("https://nhsmailemailacctkv.vault.azure.net/secrets/nhs111OnlineMailPassword").ConfigureAwait(false);
+                var nhs111OnlineMailAccount = await keyVaultClient.GetSecretAsync("https://analytics111kv.vault.azure.net/secrets/nhs111OnlineMailAccount").ConfigureAwait(false);
+                var nhs111OnlineMailPassword = await keyVaultClient.GetSecretAsync("https://analytics111kv.vault.azure.net/secrets/nhs111OnlineMailPassword").ConfigureAwait(false);
 
                 var service = new ExchangeService(ExchangeVersion.Exchange2013)
                 {
