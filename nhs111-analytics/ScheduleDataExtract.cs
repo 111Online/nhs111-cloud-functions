@@ -12,7 +12,7 @@ namespace NHS111.Cloud.Functions
     public static class ScheduleDataExtract
     {
         [FunctionName("ScheduleDataExtract")]
-        public static async Task Run([TimerTrigger("0 0 6 * * *")]TimerInfo timer, [OrchestrationClient]DurableOrchestrationClient starter, [Table("AnalyticsEmailTable", "AzureContainerConnection")]IQueryable<AnalyticsEmail> analyticsEmails, [Table("AnalyticsEmailTable", "AzureContainerConnection")]CloudTable outTable, TraceWriter log)
+        public static async Task Run([TimerTrigger("5 * * * * *")]TimerInfo timer, [OrchestrationClient]DurableOrchestrationClient starter, [Table("AnalyticsEmailTable", "AzureContainerConnection")]IQueryable<AnalyticsEmail> analyticsEmails, [Table("AnalyticsEmailTable", "AzureContainerConnection")]CloudTable outTable, TraceWriter log)
         {
             log.Info($"C# Timer trigger function executed at: {DateTime.Now}");
             foreach (var analyticsEmail in analyticsEmails)

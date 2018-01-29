@@ -17,10 +17,13 @@ namespace NHS111.Cloud.Functions
         {
             var jsonEmail = orchestrationClient.GetInput<string>();
             var email = JsonConvert.DeserializeObject<AnalyticsEmail>(jsonEmail);
+            var date = email.Date != null
+                ? Convert.ToDateTime(email.Date).ToString("yyyy-MM-dd")
+                : orchestrationClient.CurrentUtcDateTime.AddDays(-1).ToString("yyyy-MM-dd");
 
             var data = new AnalyticsData
             {
-                Date = email.Date,
+                Date = date,
                 Stp = email.Stp,
                 Ccg = email.Ccg,
             };
@@ -30,7 +33,7 @@ namespace NHS111.Cloud.Functions
             var blob = new AnalyticsBlob
             {
                 ToEmailRecipients = email.ToEmailRecipients,
-                Date = email.Date,
+                Date = date,
                 Stp = email.Stp,
                 DataRecords = JsonConvert.DeserializeObject<IEnumerable<AnalyticsDataRecord>>(jsonDataRecords)
             };
