@@ -12,9 +12,9 @@ namespace NHS111.Cloud.Functions.Models
         public string Date { get; set; }
 
         [DataMember]
-        public string Stp => PartitionKey;
+        public string Stp { get; set; }
 
         [DataMember]
-        public string Ccg => RowKey;
+        public string Ccg { get; set; }
     }
 }
