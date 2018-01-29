@@ -30,7 +30,7 @@ namespace NHS111.Cloud.Functions.Analytics
                 Body = $"<h1>Data generated at {DateTime.Now:dd/MM/yyyy hh:mm:ss}</h1>",
                 Attachments = new[] { new KeyValuePair<string, string>($"{name}.csv", await GetBlobAsStringAsync(analyticsBlob)) }
             };
-            var instanceId = await starter.StartNewAsync("NHS111OnlineMailSender", JsonConvert.SerializeObject(sendMail));
+            var instanceId = await starter.StartNewAsync("OrchestrateSendMail", JsonConvert.SerializeObject(sendMail));
             log.Info($"Started orchestration with ID = '{instanceId}'.");
         }
 

@@ -3,16 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Exchange.WebServices.Data;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
 using Newtonsoft.Json;
 using NHS111.Cloud.Functions.Models.Email;
+using Task = System.Threading.Tasks.Task;
 
 namespace NHS111.Cloud.Functions.Email
 {
@@ -35,12 +34,15 @@ namespace NHS111.Cloud.Functions.Email
                 var azureServiceTokenProvider = new AzureServiceTokenProvider();
                 var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
 
-                var nhs111OnlineMailAccount = await keyVaultClient.GetSecretAsync("https://analytics111kv.vault.azure.net/secrets/nhs111OnlineMailAccount").ConfigureAwait(false);
-                var nhs111OnlineMailPassword = await keyVaultClient.GetSecretAsync("https://analytics111kv.vault.azure.net/secrets/nhs111OnlineMailPassword").ConfigureAwait(false);
+                var nhs111OnlineMailAccount = GetSecret(keyVaultClient, "https://analytics111kv.vault.azure.net/secrets/nhs111OnlineMailAccount");
+                var nhs111OnlineMailPassword = GetSecret(keyVaultClient, "https://analytics111kv.vault.azure.net/secrets/nhs111OnlineMailPassword");
 
+                await Task.WhenAll(nhs111OnlineMailAccount, nhs111OnlineMailPassword);
+
+                log.Info($"Exchange user {nhs111OnlineMailAccount.Result}");
                 var service = new ExchangeService(ExchangeVersion.Exchange2013)
                 {
-                    Credentials = new WebCredentials(nhs111OnlineMailAccount.Value, nhs111OnlineMailPassword.Value),
+                    Credentials = new WebCredentials(nhs111OnlineMailAccount.Result, nhs111OnlineMailPassword.Result),
                     Url = new Uri("https://mail.nhs.net/EWS/Exchange.asmx")
                 };
 
@@ -91,6 +93,12 @@ namespace NHS111.Cloud.Functions.Email
             {
                 return false;
             }
+        }
+
+        public static async Task<string> GetSecret(KeyVaultClient keyVaultClient, string secretId)
+        {
+            var secret = await keyVaultClient.GetSecretAsync(secretId).ConfigureAwait(false);
+            return secret.Value;
         }
     }
 }
