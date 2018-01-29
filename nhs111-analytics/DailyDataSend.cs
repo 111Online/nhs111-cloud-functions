@@ -35,6 +35,7 @@ namespace NHS111.Cloud.Functions
                 ToEmailRecipients = email.ToEmailRecipients,
                 Date = date,
                 Stp = email.Stp,
+                InstanceId = orchestrationClient.InstanceId,
                 DataRecords = JsonConvert.DeserializeObject<IEnumerable<AnalyticsDataRecord>>(jsonDataRecords)
             };
             log.Info($"Calling function CreateAnalyticsBlob ToEmailRecipients={blob.ToEmailRecipients}, Date={blob.Date}, DataRecords.Count={blob.DataRecords.Count()}");
