@@ -16,11 +16,14 @@ namespace NHS111.Cloud.Functions
         public static string Run([ActivityTrigger]string jsonContent, TraceWriter log)
         {
             log.Info($"Activity was triggered!");
-
+            
             var data = JsonConvert.DeserializeObject<AnalyticsData>(jsonContent);
             var date = data.Date != null
                 ? Convert.ToDateTime(data.Date).ToString("yyyy-MM-dd")
                 : DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd");
+
+            log.Info($"Stp={data.Stp}, Ccg={data.Ccg}, Date={data.Date}");
+
 
             var str = ConfigurationManager.ConnectionStrings["SqlDbConnection"].ConnectionString;
             var dataRecords = new List<AnalyticsDataRecord>();
