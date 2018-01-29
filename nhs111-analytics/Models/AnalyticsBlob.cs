@@ -17,17 +17,12 @@ namespace NHS111.Cloud.Functions.Models
         public string Stp { get; set; }
 
         [DataMember]
+        public string InstanceId { get; set; }
+
+        [DataMember]
         public IEnumerable<AnalyticsDataRecord> DataRecords { get; set; }
 
         [DataMember]
-        public string BlobName
-        {
-            get
-            {
-                var guid = Guid.NewGuid().ToString("n");
-                return !string.IsNullOrEmpty(Stp) ? $"{guid}-{Stp}-{Date}.csv" : $"{guid}-{Date}.csv";
-            }
-        }
-
+        public string BlobName => !string.IsNullOrEmpty(Stp) ? $"{InstanceId}-{Stp}-{Date}.csv" : $"{InstanceId}-{Date}.csv";
     }
 }
