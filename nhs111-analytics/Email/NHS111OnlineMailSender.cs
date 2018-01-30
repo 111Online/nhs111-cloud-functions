@@ -37,7 +37,7 @@ namespace NHS111.Cloud.Functions.Email
                 var nhs111OnlineMailAccount = await keyVaultClient.GetSecretAsync("https://analytics111kv.vault.azure.net/secrets/nhs111OnlineMailAccount").ConfigureAwait(false);
                 var nhs111OnlineMailPassword = await keyVaultClient.GetSecretAsync("https://analytics111kv.vault.azure.net/secrets/nhs111OnlineMailPassword").ConfigureAwait(false);
 
-                log.Info($"Exchange user {nhs111OnlineMailAccount}");
+                log.Info($"Exchange user {nhs111OnlineMailAccount.Value}");
                 var service = new ExchangeService(ExchangeVersion.Exchange2013)
                 {
                     Credentials = new WebCredentials(nhs111OnlineMailAccount.Value, nhs111OnlineMailPassword.Value),

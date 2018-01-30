@@ -19,10 +19,7 @@ namespace NHS111.Cloud.Functions.Email
             var sendMail = await req.Content.ReadAsAsync<SendMail>();
 
             log.Info($"ToEmailRecipients={string.Join(";", sendMail.ToEmails.Select(e => e.ToString()).ToArray())}, Subject={sendMail.Subject}");
-            var instanceId = await starter.StartNewAsync("OrchestrateSendMail", JsonConvert.SerializeObject(sendMail));
-            log.Info($"Started orchestration with ID = '{instanceId}'.");
-
-            return req.CreateResponse(HttpStatusCode.OK, instanceId);
+            return await SendEmail.Run(JsonConvert.SerializeObject(sendMail), log);
         }
     }
 }

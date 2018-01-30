@@ -14,7 +14,7 @@ namespace NHS111.Cloud.Functions.Email
 
             var jsonSendMail = orchestrationClient.GetInput<string>();
             log.Info($"Calling function NHS111OnlineMailSender");
-            var response = await orchestrationClient.CallActivityAsync<HttpResponseMessage>("NHS111OnlineMailSender", jsonSendMail);
+            await orchestrationClient.CallActivityAsync<HttpResponseMessage>("NHS111OnlineMailSender", jsonSendMail);
 
             return orchestrationClient.InstanceId;
         }
