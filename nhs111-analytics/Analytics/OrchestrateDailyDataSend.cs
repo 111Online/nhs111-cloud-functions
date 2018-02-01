@@ -1,18 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Newtonsoft.Json;
-using NHS111.Cloud.Functions.Models;
+using NHS111.Cloud.Functions.Models.Analytics;
 
-namespace NHS111.Cloud.Functions
+namespace NHS111.Cloud.Functions.Analytics
 {
-    public static class DailyDataSend
+    public static class OrchestrateDailyDataSend
     {
-        [FunctionName("DailyDataSend")]
+        [FunctionName("OrchestrateDailyDataSend")]
         public static async Task<string>Run([OrchestrationTrigger] DurableOrchestrationContext orchestrationClient, TraceWriter log)
         {
             var jsonEmail = orchestrationClient.GetInput<string>();

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
-using Newtonsoft.Json;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
-using NHS111.Cloud.Functions.Models;
+using Newtonsoft.Json;
+using NHS111.Cloud.Functions.Models.Analytics;
 
-namespace NHS111.Cloud.Functions
+namespace NHS111.Cloud.Functions.Analytics
 {
     public static class ExtractAnalyticsData
     {

@@ -5,9 +5,9 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.WindowsAzure.Storage.Table;
 using Newtonsoft.Json;
-using NHS111.Cloud.Functions.Models;
+using NHS111.Cloud.Functions.Models.Analytics;
 
-namespace NHS111.Cloud.Functions
+namespace NHS111.Cloud.Functions.Analytics
 {
     public static class ScheduleDataExtract
     {
@@ -18,7 +18,7 @@ namespace NHS111.Cloud.Functions
             foreach (var analyticsEmail in analyticsEmails)
             {
                 log.Info($"Stp={analyticsEmail.Stp}, Ccg={analyticsEmail.Ccg}, ToEmailRecipients={analyticsEmail.ToEmailRecipients}, Date={analyticsEmail.Date}");
-                var instanceId = await starter.StartNewAsync("DailyDataSend", JsonConvert.SerializeObject(analyticsEmail));
+                var instanceId = await starter.StartNewAsync("OrchestrateDailyDataSend", JsonConvert.SerializeObject(analyticsEmail));
                 log.Info($"Started orchestration with ID = '{instanceId}'.");
 
                 var updateAnalyticsEmail = GetTableEntity(outTable, analyticsEmail.PartitionKey, analyticsEmail.RowKey);
