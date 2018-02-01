@@ -6,6 +6,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json;
+using NHS111.Cloud.Functions.Email;
 using NHS111.Cloud.Functions.Models.Email;
 using Task = System.Threading.Tasks.Task;
 
@@ -30,8 +31,7 @@ namespace NHS111.Cloud.Functions.Analytics
                 Body = $"<h1>Data generated at {DateTime.Now:dd/MM/yyyy hh:mm:ss}</h1>",
                 Attachments = new[] { new KeyValuePair<string, string>($"{name}.csv", await GetBlobAsStringAsync(analyticsBlob)) }
             };
-            var instanceId = await starter.StartNewAsync("OrchestrateSendMail", JsonConvert.SerializeObject(sendMail));
-            log.Info($"Started orchestration with ID = '{instanceId}'.");
+            await SendEmail.Run(JsonConvert.SerializeObject(sendMail), log);
         }
 
         public static async Task<string> GetBlobAsStringAsync(CloudBlockBlob blob)

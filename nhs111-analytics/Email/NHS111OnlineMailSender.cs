@@ -29,7 +29,7 @@ namespace NHS111.Cloud.Functions.Email
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
 
-            if (IsValidEmails(sendMail.ToEmails) && IsValidEmails(sendMail.CcEmails))
+            if (IsValidEmails(sendMail.ToEmails) && (sendMail.CcEmails == null || IsValidEmails(sendMail.CcEmails)))
             {
                 var azureServiceTokenProvider = new AzureServiceTokenProvider();
                 var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
@@ -53,11 +53,17 @@ namespace NHS111.Cloud.Functions.Email
                 foreach (var toEmail in sendMail.ToEmails)
                     message.ToRecipients.Add(toEmail);
 
-                foreach (var ccEmail in sendMail.CcEmails)
-                    message.CcRecipients.Add(ccEmail);
+                if (sendMail.CcEmails != null)
+                {
+                    foreach (var ccEmail in sendMail.CcEmails)
+                        message.CcRecipients.Add(ccEmail);
+                }
 
-                foreach (var attachment in sendMail.Attachments)
-                    message.Attachments.AddFileAttachment(attachment.Key, Convert.FromBase64String(attachment.Value));
+                if (sendMail.Attachments != null)
+                {
+                    foreach (var attachment in sendMail.Attachments)
+                        message.Attachments.AddFileAttachment(attachment.Key, Convert.FromBase64String(attachment.Value));
+                }
 
                 try
                 {
