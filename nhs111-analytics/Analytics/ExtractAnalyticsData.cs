@@ -43,7 +43,7 @@ namespace NHS111.Cloud.Functions.Analytics
                         var dataRecord = new AnalyticsDataRecord
                         {
                             JourneyId = reader.GetGuid(0),
-                            Age = Convert.ToInt32(reader.GetString(1)),
+                            Age = reader.GetInt32(1),
                             Gender = reader.SafeGetString(2),
                             Stp = reader.SafeGetString(3),
                             Ccg = reader.SafeGetString(4),
