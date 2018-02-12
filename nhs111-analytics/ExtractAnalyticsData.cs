@@ -60,7 +60,15 @@ namespace NHS111.Cloud.Functions
                 }
             }
 
-            CreateAnalyticsBlob.Run(JsonConvert.SerializeObject(dataRecords), log);
+            var blob = new AnalyticsBlob
+            {
+                ToEmailRecipients = data.ToEmailRecipients,
+                Date = data.Date,
+                Stp = data.Stp,
+                InstanceId = data.InstanceId,
+                DataRecords = dataRecords
+            };
+            CreateAnalyticsBlob.Run(JsonConvert.SerializeObject(blob), log);
         }
 
         public static string SafeGetString(this SqlDataReader reader, int colIndex)
