@@ -13,7 +13,7 @@ namespace NHS111.Cloud.Functions
     public static class ExtractAnalyticsData
     {
         [FunctionName("ExtractAnalyticsData")]
-        public static string Run([ActivityTrigger]string jsonContent, TraceWriter log)
+        public static void Run([ActivityTrigger]string jsonContent, TraceWriter log)
         {
             log.Info($"Activity was triggered!");
             
@@ -60,7 +60,7 @@ namespace NHS111.Cloud.Functions
                 }
             }
 
-            return JsonConvert.SerializeObject(dataRecords);
+            CreateAnalyticsBlob.Run(JsonConvert.SerializeObject(dataRecords), log);
         }
 
         public static string SafeGetString(this SqlDataReader reader, int colIndex)
