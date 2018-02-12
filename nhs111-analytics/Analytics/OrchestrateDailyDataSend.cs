@@ -22,24 +22,15 @@ namespace NHS111.Cloud.Functions.Analytics
 
             var data = new AnalyticsData
             {
+                ToEmailRecipients = email.ToEmailRecipients,
+                InstanceId = orchestrationClient.InstanceId,
                 Date = date,
                 Stp = email.Stp,
                 Ccg = email.Ccg,
             };
             log.Info($"Calling function ExtractAnalyticsData Stp={data.Stp}, Ccg={data.Ccg}, Date={data.Date}");
-            var jsonDataRecords = await orchestrationClient.CallActivityAsync<string>("ExtractAnalyticsData", JsonConvert.SerializeObject(data));
+            await orchestrationClient.CallActivityAsync<string>("ExtractAnalyticsData", JsonConvert.SerializeObject(data));
             
-            var blob = new AnalyticsBlob
-            {
-                ToEmailRecipients = email.ToEmailRecipients,
-                Date = date,
-                Stp = email.Stp,
-                InstanceId = orchestrationClient.InstanceId,
-                DataRecords = JsonConvert.DeserializeObject<IEnumerable<AnalyticsDataRecord>>(jsonDataRecords)
-            };
-            log.Info($"Calling function CreateAnalyticsBlob ToEmailRecipients={blob.ToEmailRecipients}, Date={blob.Date}, DataRecords.Count={blob.DataRecords.Count()}");
-            await orchestrationClient.CallActivityAsync("CreateAnalyticsBlob", JsonConvert.SerializeObject(blob));
-
             return orchestrationClient.InstanceId;
         }
     }

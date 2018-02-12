@@ -13,5 +13,11 @@ namespace NHS111.Cloud.Functions.Models.Analytics
 
         [DataMember]
         public string Ccg { get; set; }
+
+        [DataMember]
+        public string ToEmailRecipients { get; set; }
+
+        [DataMember]
+        public string InstanceId { get; set; }
     }
 }
