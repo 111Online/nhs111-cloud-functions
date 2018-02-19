@@ -26,6 +26,6 @@ namespace NHS111.Cloud.Functions.Models
         public IEnumerable<AnalyticsDataRecord> DataRecords { get; set; }
 
         [DataMember]
-        public string BlobName => !string.IsNullOrEmpty(GroupName) ? $"{InstanceId}-{GroupName}-{Date}.csv" : $"{InstanceId}-{Date}.csv";
+        public string BlobName => !string.IsNullOrEmpty(GroupName) ? $"{InstanceId}:{GroupName}-{Date}.csv" : $"{InstanceId}:{Date}.csv";
     }
 }

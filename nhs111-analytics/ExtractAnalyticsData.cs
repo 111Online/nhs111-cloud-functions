@@ -29,8 +29,8 @@ namespace NHS111.Cloud.Functions
                 using (var cmd = new SqlCommand("[dbo].[spGetCcgData]", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    if (data.StpList != null) cmd.Parameters.Add(new SqlParameter("@CAMPAIGNS", data.StpList));
-                    if (data.CcgList != null) cmd.Parameters.Add(new SqlParameter("@CAMPAIGNSOURCES", data.CcgList));
+                    if (!string.IsNullOrEmpty(data.StpList)) cmd.Parameters.Add(new SqlParameter("@CAMPAIGNS", data.StpList));
+                    if (!string.IsNullOrEmpty(data.CcgList)) cmd.Parameters.Add(new SqlParameter("@CAMPAIGNSOURCES", data.CcgList));
                     log.Info($"Using start date {data.StartDate}");
                     if (data.StartDate != null) cmd.Parameters.Add(new SqlParameter("@STARTDATE", data.StartDate));
                     log.Info($"Extracting {data.NumberOfDays} days of data");
