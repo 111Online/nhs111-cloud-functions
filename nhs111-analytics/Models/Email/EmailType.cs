@@ -8,8 +8,8 @@ namespace NHS111.Cloud.Functions.Models.Email
 {
     public class EmailType
     {
-        public static EmailType Itk = new EmailType { Name = "Itk", AccountKey = "nhs111OnlineMailAccount", PasswordKey = "nhs111OnlineMailPassword" };
-        public static EmailType DataExtract = new EmailType { Name = "DataExtract", AccountKey = "nhs111OnlineItkMailAccount", PasswordKey = "nhs111OnlineItkMailPassword" };
+        public static EmailType Referral = new EmailType { Name = "Referral", AccountKey = "nhs111OnlineReferralMailAccount", PasswordKey = "nhs111OnlineReferralMailPassword" };
+        public static EmailType DataExtract = new EmailType { Name = "DataExtract", AccountKey = "nhs111OnlineMailAccount", PasswordKey = "nhs111OnlineIMailPassword" };
 
         public string Name { get; private set; }
 
@@ -28,6 +28,6 @@ namespace NHS111.Cloud.Functions.Models.Email
         }
 
         private EmailType() { }
-        private static readonly EmailType[] SupportedTypes = { Itk, DataExtract };
+        private static readonly EmailType[] SupportedTypes = { Referral, DataExtract };
     }
 }
