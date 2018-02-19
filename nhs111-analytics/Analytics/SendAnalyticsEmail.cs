@@ -15,12 +15,12 @@ namespace NHS111.Cloud.Functions.Analytics
     public static class SendAnalyticsEmail
     {
         [FunctionName("SendAnalyticsEmail")]
-        public static async Task Run([BlobTrigger("analytics/{name}.csv", Connection = "AzureContainerConnection")]CloudBlockBlob analyticsBlob, [OrchestrationClient]DurableOrchestrationClient starter, string name, TraceWriter log)
+        public static async Task Run([BlobTrigger("analytics/{name}.csv", Connection = "AzureContainerConnection")]CloudBlockBlob analyticsBlob, string name, TraceWriter log)
         {
             log.Info($"C# Blob trigger function Processed blob\n Name:{name} \n Size: {analyticsBlob.StreamWriteSizeInBytes} Bytes");
             log.Info($"Email for recipients : {analyticsBlob.Metadata["emailrecipients"]}");
 
-            var date = name.Substring(name.IndexOf('-') + 1);
+            var date = name.Substring(name.IndexOf(':') + 1);
             var subject = $"Data extract for {date} has been created";
             log.Info($"ToEmailRecipients={analyticsBlob.Metadata["emailrecipients"]}, Subject={subject}");
 

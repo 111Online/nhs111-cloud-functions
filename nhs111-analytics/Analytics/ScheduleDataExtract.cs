@@ -22,7 +22,7 @@ namespace NHS111.Cloud.Functions.Analytics
                 log.Info($"StpList={analyticsEmail.StpList}, CcgList={analyticsEmail.CcgList}, ToEmailRecipients={analyticsEmail.ToEmailRecipients}, StartDate={analyticsEmail.StartDate}");
                 try
                 {
-                    DailyDataSend.Run(JsonConvert.SerializeObject(analyticsEmail), log);
+                    OrchestrateDailyDataSend.Run(JsonConvert.SerializeObject(analyticsEmail), log);
                     var updateAnalyticsEmail = await GetTableEntity(outTable, analyticsEmail.PartitionKey, analyticsEmail.RowKey);
                     updateAnalyticsEmail.StartDate = Convert.ToDateTime(analyticsEmail.StartDate).AddDays(analyticsEmail.NumberOfDays).ToString("yyyy-MM-dd");
                     await UpdateTableEntity(outTable, updateAnalyticsEmail);
