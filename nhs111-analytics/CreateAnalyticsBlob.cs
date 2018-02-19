@@ -16,8 +16,7 @@ namespace NHS111.Cloud.Functions
 {
     public static class CreateAnalyticsBlob
     {
-        [FunctionName("CreateAnalyticsBlob")]
-        public static void Run([ActivityTrigger]string jsonContent, TraceWriter log)
+        public static void Run(string jsonContent, TraceWriter log)
         {
             log.Info($"Activity was triggered!");
             var blob = JsonConvert.DeserializeObject<AnalyticsBlob>(jsonContent);

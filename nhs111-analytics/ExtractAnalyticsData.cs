@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
@@ -12,13 +13,12 @@ namespace NHS111.Cloud.Functions
 {
     public static class ExtractAnalyticsData
     {
-        [FunctionName("ExtractAnalyticsData")]
-        public static void Run([ActivityTrigger]string jsonContent, TraceWriter log)
+        public static void Run(string jsonContent, TraceWriter log)
         {
             log.Info($"Activity was triggered!");
             
             var data = JsonConvert.DeserializeObject<AnalyticsData>(jsonContent);
-            log.Info($"Stp={data.Stp}, Ccg={data.Ccg}, Date={data.Date}");
+            log.Info($"StpList={data.StpList}, CcgList={data.CcgList}, Date={data.StartDate}");
 
             var str = ConfigurationManager.ConnectionStrings["SqlDbConnection"].ConnectionString;
             var dataRecords = new List<AnalyticsDataRecord>();
@@ -29,10 +29,12 @@ namespace NHS111.Cloud.Functions
                 using (var cmd = new SqlCommand("[dbo].[spGetCcgData]", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    if (data.Stp != null) cmd.Parameters.Add(new SqlParameter("@CAMPAIGN", data.Stp));
-                    if (data.Ccg != null) cmd.Parameters.Add(new SqlParameter("@CAMPAIGNSOURCE", data.Ccg));
-                    log.Info($"Using date {data.Date}");
-                    if (data.Date != null) cmd.Parameters.Add(new SqlParameter("@DATE", data.Date));
+                    if (!string.IsNullOrEmpty(data.StpList)) cmd.Parameters.Add(new SqlParameter("@CAMPAIGNS", data.StpList));
+                    if (!string.IsNullOrEmpty(data.CcgList)) cmd.Parameters.Add(new SqlParameter("@CAMPAIGNSOURCES", data.CcgList));
+                    log.Info($"Using start date {data.StartDate}");
+                    if (data.StartDate != null) cmd.Parameters.Add(new SqlParameter("@STARTDATE", data.StartDate));
+                    log.Info($"Extracting {data.NumberOfDays} days of data");
+                    cmd.Parameters.Add(new SqlParameter("@DAYS", data.NumberOfDays));
 
                     var reader = cmd.ExecuteReader();
                     log.Info($"Executed stored procedure");
@@ -63,8 +65,9 @@ namespace NHS111.Cloud.Functions
             var blob = new AnalyticsBlob
             {
                 ToEmailRecipients = data.ToEmailRecipients,
-                Date = data.Date,
-                Stp = data.Stp,
+                GroupName = data.GroupName,
+                Date = data.StartDate,
+                Stp = data.StpList,
                 InstanceId = data.InstanceId,
                 DataRecords = dataRecords
             };

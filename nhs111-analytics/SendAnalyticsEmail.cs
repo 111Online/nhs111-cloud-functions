@@ -20,11 +20,11 @@ namespace NHS111.Cloud.Functions
             var password = ConfigurationManager.AppSettings["Office365Password"];
 
             var credentials = new WebCredentials(username, password);
-            var date = name.Substring(name.IndexOf('-') + 1);
-            SendEmail(credentials, ConfigurationManager.AppSettings["EmailFromAddress"], analyticsBlob.Metadata["emailrecipients"], name, date, analyticsBlob);
+            var date = name.Substring(name.IndexOf(':') + 1);
+            SendEmail(credentials, ConfigurationManager.AppSettings["EmailFromAddress"], analyticsBlob.Metadata["emailrecipients"], name, date, analyticsBlob, log);
         }
 
-        private static async void SendEmail(ExchangeCredentials credentials, string fromAddress, string recipients, string filename, string date, CloudBlob analyticsBlob)
+        private static async void SendEmail(ExchangeCredentials credentials, string fromAddress, string recipients, string filename, string date, CloudBlob analyticsBlob, TraceWriter log)
         {
             var service = new ExchangeService
             {
@@ -44,6 +44,7 @@ namespace NHS111.Cloud.Functions
             foreach (var recipient in recipients.Split(';'))
                  message.ToRecipients.Add(recipient);
 
+            log.Info($"Sending e-mail");
             message.Send();
         }
 

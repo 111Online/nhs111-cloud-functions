@@ -12,27 +12,27 @@ namespace NHS111.Cloud.Functions
 {
     public static class DailyDataSend
     {
-        [FunctionName("DailyDataSend")]
-        public static async Task<string>Run([OrchestrationTrigger] DurableOrchestrationContext orchestrationClient, TraceWriter log)
+        public static string Run(string jsonEmail, TraceWriter log)
         {
-            var jsonEmail = orchestrationClient.GetInput<string>();
             var email = JsonConvert.DeserializeObject<AnalyticsEmail>(jsonEmail);
-            var date = email.Date != null
-                ? Convert.ToDateTime(email.Date).ToString("yyyy-MM-dd")
-                : orchestrationClient.CurrentUtcDateTime.AddDays(-1).ToString("yyyy-MM-dd");
+            var date = email.StartDate != null
+                ? Convert.ToDateTime(email.StartDate).ToString("yyyy-MM-dd")
+                : DateTime.Now.Date.AddDays(-1).ToString("yyyy-MM-dd");
 
             var data = new AnalyticsData
             {
                 ToEmailRecipients = email.ToEmailRecipients,
-                InstanceId = orchestrationClient.InstanceId,
-                Date = date,
-                Stp = email.Stp,
-                Ccg = email.Ccg,
+                InstanceId = Guid.NewGuid().ToString(),
+                StartDate = date,
+                StpList = email.StpList,
+                CcgList = email.CcgList,
+                NumberOfDays = email.NumberOfDays,
+                GroupName = email.RowKey
             };
-            log.Info($"Calling function ExtractAnalyticsData Stp={data.Stp}, Ccg={data.Ccg}, Date={data.Date}");
-            await orchestrationClient.CallActivityAsync<string>("ExtractAnalyticsData", JsonConvert.SerializeObject(data));
+            log.Info($"Calling function ExtractAnalyticsData StpList={data.StpList}, CcgList={data.CcgList}, StartDate={data.StartDate}");
+            ExtractAnalyticsData.Run(JsonConvert.SerializeObject(data), log);
             
-            return orchestrationClient.InstanceId;
+            return data.InstanceId;
         }
     }
 }

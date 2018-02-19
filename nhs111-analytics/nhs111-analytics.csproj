@@ -3,8 +3,8 @@
     <TargetFramework>net461</TargetFramework>
     <AssemblyName>NHS111.Cloud.Functions</AssemblyName>
     <RootNamespace>NHS111.Cloud.Functions</RootNamespace>
-    <AssemblyVersion>1.1.0.1</AssemblyVersion>
-    <FileVersion>1.1.0.1</FileVersion>
+    <AssemblyVersion>1.2.0.1</AssemblyVersion>
+    <FileVersion>1.2.0.1</FileVersion>
   </PropertyGroup>
   <ItemGroup>    
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.DurableTask" Version="1.1.0-beta2" />  
