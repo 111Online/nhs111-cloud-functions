@@ -9,12 +9,15 @@ namespace NHS111.Cloud.Functions.Models
         public string ToEmailRecipients { get; set; }
 
         [DataMember]
-        public string Date { get; set; }
+        public string StartDate { get; set; }
 
         [DataMember]
-        public string Stp { get; set; }
+        public int NumberOfDays { get; set; }
 
         [DataMember]
-        public string Ccg { get; set; }
+        public string StpList { get; set; }
+
+        [DataMember]
+        public string CcgList { get; set; }
     }
 }

@@ -11,6 +11,9 @@ namespace NHS111.Cloud.Functions.Models
         public string ToEmailRecipients { get; set; }
 
         [DataMember]
+        public string GroupName { get; set; }
+
+        [DataMember]
         public string Date { get; set; }
 
         [DataMember]
@@ -23,6 +26,6 @@ namespace NHS111.Cloud.Functions.Models
         public IEnumerable<AnalyticsDataRecord> DataRecords { get; set; }
 
         [DataMember]
-        public string BlobName => !string.IsNullOrEmpty(Stp) ? $"{InstanceId}-{Stp}-{Date}.csv" : $"{InstanceId}-{Date}.csv";
+        public string BlobName => !string.IsNullOrEmpty(GroupName) ? $"{InstanceId}-{GroupName}-{Date}.csv" : $"{InstanceId}-{Date}.csv";
     }
 }
