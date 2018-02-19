@@ -6,9 +6,10 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using Newtonsoft.Json;
+using NHS111.Cloud.Functions.Email;
 using NHS111.Cloud.Functions.Models.Email;
 
-namespace NHS111.Cloud.Functions.Email
+namespace NHS111.Cloud.Functions
 {
     public static class RequestSendEmail
     {

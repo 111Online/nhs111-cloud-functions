@@ -5,9 +5,10 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.WindowsAzure.Storage.Table;
 using Newtonsoft.Json;
+using NHS111.Cloud.Functions.Analytics;
 using NHS111.Cloud.Functions.Models.Analytics;
 
-namespace NHS111.Cloud.Functions.Analytics
+namespace NHS111.Cloud.Functions
 {
     public static class ScheduleDataExtract
     {

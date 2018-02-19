@@ -17,8 +17,7 @@ namespace NHS111.Cloud.Functions.Email
 {
     public static class SendEmail
     {
-        [FunctionName("NHS111OnlineMailSender")]
-        public static async Task<HttpResponseMessage> Run([ActivityTrigger]string jsonContent, TraceWriter log)
+        public static async Task<HttpResponseMessage> Run(string jsonContent, TraceWriter log)
         {
             log.Info("C# NHS111OnlineMailSender trigger function processed a request.");
             var sendMail = JsonConvert.DeserializeObject<SendMail>(jsonContent);
