@@ -29,7 +29,8 @@ namespace NHS111.Cloud.Functions
                 ToEmails = analyticsBlob.Metadata["emailrecipients"].Split(';'),
                 Subject = subject,
                 Body = $"<h1>Data generated at {DateTime.Now:dd/MM/yyyy hh:mm:ss}</h1>",
-                Attachments = new[] { new KeyValuePair<string, string>($"{name}.csv", await GetBlobAsStringAsync(analyticsBlob)) }
+                Attachments = new[] { new KeyValuePair<string, string>($"{name}.csv", await GetBlobAsStringAsync(analyticsBlob)) },
+                EmailType = EmailType.DataExtract.Name
             };
             await SendEmail.Run(JsonConvert.SerializeObject(sendMail), log);
         }

@@ -21,7 +21,13 @@ namespace NHS111.Cloud.Functions.Email
         {
             log.Info("C# NHS111OnlineMailSender trigger function processed a request.");
             var sendMail = JsonConvert.DeserializeObject<SendMail>(jsonContent);
-            
+
+            if (!EmailType.IsSupported(sendMail.EmailType))
+            {
+                log.Info($"Email type {sendMail.EmailType} is not supported!");
+                return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+            }
+
             if (sendMail.ToEmails == null || sendMail.Body == null || sendMail.Subject == null)
             {
                 log.Info("Usage: Args[]: str:RecipientEmail, str:Subject, str:Body");
@@ -33,13 +39,14 @@ namespace NHS111.Cloud.Functions.Email
                 var azureServiceTokenProvider = new AzureServiceTokenProvider();
                 var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
 
-                var nhs111OnlineMailAccount = await keyVaultClient.GetSecretAsync("https://analytics111kv.vault.azure.net/secrets/nhs111OnlineMailAccount").ConfigureAwait(false);
-                var nhs111OnlineMailPassword = await keyVaultClient.GetSecretAsync("https://analytics111kv.vault.azure.net/secrets/nhs111OnlineMailPassword").ConfigureAwait(false);
+                var emailType = EmailType.GetType(sendMail.EmailType);
+                var mailAccount = await keyVaultClient.GetSecretAsync($"https://analytics111kv.vault.azure.net/secrets/{emailType.AccountKey}").ConfigureAwait(false);
+                var mailPassword = await keyVaultClient.GetSecretAsync($"https://analytics111kv.vault.azure.net/secrets/{emailType.PasswordKey}").ConfigureAwait(false);
 
-                log.Info($"Exchange user {nhs111OnlineMailAccount.Value}");
+                log.Info($"Exchange user {mailAccount.Value}");
                 var service = new ExchangeService(ExchangeVersion.Exchange2013)
                 {
-                    Credentials = new WebCredentials(nhs111OnlineMailAccount.Value, nhs111OnlineMailPassword.Value),
+                    Credentials = new WebCredentials(mailAccount.Value, mailPassword.Value),
                     Url = new Uri("https://mail.nhs.net/EWS/Exchange.asmx")
                 };
 
