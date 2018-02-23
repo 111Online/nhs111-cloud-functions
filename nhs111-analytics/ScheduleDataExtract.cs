@@ -5,7 +5,8 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.WindowsAzure.Storage.Table;
 using Newtonsoft.Json;
-using NHS111.Cloud.Functions.Models;
+using NHS111.Cloud.Functions.Analytics;
+using NHS111.Cloud.Functions.Models.Analytics;
 
 namespace NHS111.Cloud.Functions
 {
@@ -22,7 +23,7 @@ namespace NHS111.Cloud.Functions
                 log.Info($"StpList={analyticsEmail.StpList}, CcgList={analyticsEmail.CcgList}, ToEmailRecipients={analyticsEmail.ToEmailRecipients}, StartDate={analyticsEmail.StartDate}");
                 try
                 {
-                    DailyDataSend.Run(JsonConvert.SerializeObject(analyticsEmail), log);
+                    OrchestrateDailyDataSend.Run(JsonConvert.SerializeObject(analyticsEmail), log);
                     var updateAnalyticsEmail = await GetTableEntity(outTable, analyticsEmail.PartitionKey, analyticsEmail.RowKey);
                     updateAnalyticsEmail.StartDate = Convert.ToDateTime(analyticsEmail.StartDate).AddDays(analyticsEmail.NumberOfDays).ToString("yyyy-MM-dd");
                     await UpdateTableEntity(outTable, updateAnalyticsEmail);
