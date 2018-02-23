@@ -17,6 +17,8 @@ namespace NHS111.Cloud.Functions.Email
 {
     public static class SendEmail
     {
+        private const string NoReply = "<br><br><p>Please don't respond to this email, if you have any questions or feedback email <a href=\"mailto: nhs111online@nhs.net\" target=\"_blank\">nhs111online@nhs.net</a></p>";
+
         public static async Task<HttpResponseMessage> Run(string jsonContent, TraceWriter log)
         {
             log.Info("C# NHS111OnlineMailSender trigger function processed a request.");
@@ -53,7 +55,7 @@ namespace NHS111.Cloud.Functions.Email
                 var message = new EmailMessage(service)
                 {
                     Subject = sendMail.Subject,
-                    Body = new MessageBody(BodyType.HTML, sendMail.Body)
+                    Body = new MessageBody(BodyType.HTML, $"{sendMail.Body}{(sendMail.EmailType != EmailType.DataExtract.Name ? NoReply : string.Empty)}")
                 };
 
                 foreach (var toEmail in sendMail.ToEmails)
