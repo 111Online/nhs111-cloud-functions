@@ -44,6 +44,7 @@ namespace NHS111.Cloud.Functions.Email
 
                 var emailType = EmailType.GetType(sendMail.EmailType);
                 var keyVaultName = ConfigurationManager.AppSettings["KeyVaultName"];
+                log.Info($"Using key vault {keyVaultName}");
                 var mailAccount = await keyVaultClient.GetSecretAsync($"https://{keyVaultName}.vault.azure.net/secrets/{emailType.AccountKey}").ConfigureAwait(false);
                 var mailPassword = await keyVaultClient.GetSecretAsync($"https://{keyVaultName}.vault.azure.net/secrets/{emailType.PasswordKey}").ConfigureAwait(false);
 
