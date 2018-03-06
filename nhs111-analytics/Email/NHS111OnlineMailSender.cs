@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -42,8 +43,10 @@ namespace NHS111.Cloud.Functions.Email
                 var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
 
                 var emailType = EmailType.GetType(sendMail.EmailType);
-                var mailAccount = await keyVaultClient.GetSecretAsync($"https://analytics111kv.vault.azure.net/secrets/{emailType.AccountKey}").ConfigureAwait(false);
-                var mailPassword = await keyVaultClient.GetSecretAsync($"https://analytics111kv.vault.azure.net/secrets/{emailType.PasswordKey}").ConfigureAwait(false);
+                var keyVaultName = ConfigurationManager.AppSettings["KeyVaultName"];
+                log.Info($"Using key vault {keyVaultName}");
+                var mailAccount = await keyVaultClient.GetSecretAsync($"https://{keyVaultName}.vault.azure.net/secrets/{emailType.AccountKey}").ConfigureAwait(false);
+                var mailPassword = await keyVaultClient.GetSecretAsync($"https://{keyVaultName}.vault.azure.net/secrets/{emailType.PasswordKey}").ConfigureAwait(false);
 
                 log.Info($"Exchange user {mailAccount.Value}");
                 var service = new ExchangeService(ExchangeVersion.Exchange2013)
