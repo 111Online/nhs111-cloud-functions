@@ -29,6 +29,6 @@ namespace NHS111.Cloud.Functions.Models.Email
         }
 
         private EmailType() { }
-        private static readonly EmailType[] SupportedTypes = { Referral, DataExtract };
+        private static readonly EmailType[] SupportedTypes = { Referral, DataExtract, DataPortal };
     }
 }
