@@ -28,7 +28,7 @@ namespace NHS111.Cloud.Functions.Analytics
                 using (var cmd = new SqlCommand("[dbo].[spGetCcgData]", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.CommandTimeout = GetCommandTiemout();
+                    cmd.CommandTimeout = GetCommandTimeout();
                     if (!string.IsNullOrEmpty(data.StpList)) cmd.Parameters.Add(new SqlParameter("@CAMPAIGNS", data.StpList));
                     if (!string.IsNullOrEmpty(data.CcgList)) cmd.Parameters.Add(new SqlParameter("@CAMPAIGNSOURCES", data.CcgList));
                     log.Info($"Using start date {data.StartDate}");
@@ -74,7 +74,7 @@ namespace NHS111.Cloud.Functions.Analytics
             CreateAnalyticsBlob.Run(JsonConvert.SerializeObject(blob), log);
         }
 
-        private static int GetCommandTiemout()
+        private static int GetCommandTimeout()
         {
             var timceoutConfig = ConfigurationManager.AppSettings["CommandTimeout"];
             if (timceoutConfig != null) return Convert.ToInt32(timceoutConfig);
