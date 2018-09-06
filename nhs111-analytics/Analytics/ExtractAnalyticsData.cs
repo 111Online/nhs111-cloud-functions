@@ -28,6 +28,7 @@ namespace NHS111.Cloud.Functions.Analytics
                 using (var cmd = new SqlCommand("[dbo].[spGetCcgData]", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandTimeout = GetCommandTiemout();
                     if (!string.IsNullOrEmpty(data.StpList)) cmd.Parameters.Add(new SqlParameter("@CAMPAIGNS", data.StpList));
                     if (!string.IsNullOrEmpty(data.CcgList)) cmd.Parameters.Add(new SqlParameter("@CAMPAIGNSOURCES", data.CcgList));
                     log.Info($"Using start date {data.StartDate}");
@@ -71,6 +72,13 @@ namespace NHS111.Cloud.Functions.Analytics
                 DataRecords = dataRecords
             };
             CreateAnalyticsBlob.Run(JsonConvert.SerializeObject(blob), log);
+        }
+
+        private static int GetCommandTiemout()
+        {
+            var timceoutConfig = ConfigurationManager.AppSettings["CommandTimeout"];
+            if (timceoutConfig != null) return Convert.ToInt32(timceoutConfig);
+            return 30;
         }
 
         public static string SafeGetString(this SqlDataReader reader, int colIndex)

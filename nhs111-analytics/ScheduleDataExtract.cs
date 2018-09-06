@@ -31,6 +31,8 @@ namespace NHS111.Cloud.Functions
                 catch (Exception e)
                 {
                     log.Error("An error occurred", e);
+                    log.Error($"Error detail - {e.Message}", e);
+                    if(e.InnerException != null) log.Error($" --> inner Error detail - {e.InnerException}", e.InnerException);
                     throw;
                 }
             }  
