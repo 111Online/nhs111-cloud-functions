@@ -91,7 +91,7 @@ namespace NHS111.Cloud.Functions.Analytics
                             "SELECT COUNT(1) FROM [dbo].[CaseRecord] WHERE [StartDateTime] BETWEEN @STARTDATE AND @ENDDATE",
                             conn))
                     {
-                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandType = CommandType.Text;
                         cmd.CommandTimeout = GetCommandTimeout();
                         cmd.Parameters.Add(new SqlParameter("@STARTDATE", extractDateTime.ToString("yyyy-MM-dd")));
                         cmd.Parameters.Add(new SqlParameter("@ENDDATE",
