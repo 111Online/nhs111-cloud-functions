@@ -20,10 +20,16 @@ namespace NHS111.Cloud.Functions
         {
             log.Info($"C# Timer trigger function executed at: {DateTime.Now}");
 
-            log.Info($"Checking data import has completed successfully for {DateTime.Now.AddDays(-1).Date.ToShortDateString()}");
-            //
-            //some code
-            //log error (no it hasn't)
+            log.Info($"Checking overnight data import has completed successfully for {DateTime.Now.AddDays(-1).Date.ToShortDateString()}");
+            var cnt = ExtractAnalyticsData.Run(DateTime.Now.AddDays(-1), log);
+            if (cnt == 0)
+            {
+                //send email to slack channel to raise error
+                var importFailSubject = "Data extract import failure";
+                var importFailBody = $"The scheduled data extract return {cnt} rows for the extract date {DateTime.Now.ToShortDateString()}";
+                await SendMail(importFailSubject, importFailBody, log);
+                throw new Exception();
+            }
             
             foreach (var analyticsEmail in analyticsEmails)
             {
@@ -48,14 +54,9 @@ namespace NHS111.Cloud.Functions
                         if (e.InnerException != null) log.Error($" --> inner Error detail - {e.InnerException}", e.InnerException);
 
                         //send email to slack channel to raise error
-                        var sendMail = new SendMail
-                        {
-                            ToEmails = new[] { ConfigurationManager.AppSettings["SlackChannelMailAddress"] },
-                            EmailType = "DataExtract",
-                            Body = $"Error detail - {e.Message}",// {e.InnerException!= null ? $"--> inner Error detail - {e.InnerException}" : $"{string.Empty}" },
-                            Subject = "Data extract sending function failure"
-                        };
-                        await SendEmail.Run(JsonConvert.SerializeObject(sendMail), log);
+                        var sendFailSubject = "Data extract sending function failure";
+                        var sendFailBody = $"Error detail - {e.Message} {(e.InnerException != null ? $" --> inner Error detail - {e.InnerException}" : $"{string.Empty}")}";
+                        await SendMail(sendFailSubject, sendFailBody, log);
                         throw;
                     }
                 }
@@ -73,6 +74,18 @@ namespace NHS111.Cloud.Functions
         {
             var operation = TableOperation.Replace(analyticsEmail);
             await table.ExecuteAsync(operation);
+        }
+
+        private static async Task SendMail(string subject, string body, TraceWriter log)
+        {
+            var sendMail = new SendMail
+            {
+                ToEmails = ConfigurationManager.AppSettings["SendMailFailureAddresses"].Split(';'),
+                EmailType = "DataExtract",
+                Subject = subject,
+                Body = body
+            };
+            await SendEmail.Run(JsonConvert.SerializeObject(sendMail), log);
         }
     }
 }
