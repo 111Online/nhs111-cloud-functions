@@ -18,24 +18,25 @@ namespace NHS111.Cloud.Functions
         [FunctionName("ScheduleDataExtract")]
         public static async Task Run([TimerTrigger("0 0 6 * * *")]TimerInfo timer, [Table("AnalyticsEmailTable", "Email", Connection = "AzureContainerConnection")]IQueryable<AnalyticsEmail> analyticsEmails, [Table("AnalyticsEmailTable", "Email", Connection = "AzureContainerConnection")]CloudTable outTable, TraceWriter log)
         {
-            log.Info($"C# Timer trigger function executed at: {DateTime.Now}");
+            var executionDate = DateTime.Now;
+            log.Info($"C# Timer trigger function executed at: {executionDate}");
 
-            log.Info($"Checking overnight data import has completed successfully for {DateTime.Now.AddDays(-1).Date.ToShortDateString()}");
-            var cnt = ExtractAnalyticsData.Run(DateTime.Now.AddDays(-1), log);
+            log.Info($"Checking overnight data import has completed successfully for {executionDate.AddDays(-1).Date.ToShortDateString()}");
+            var cnt = ExtractAnalyticsData.Run(executionDate.AddDays(-1), log);
             if (cnt == 0)
             {
                 //send email to slack channel to raise error
                 var importFailSubject = "Data extract import failure";
-                var importFailBody = $"The scheduled data extract return {cnt} rows for the extract date {DateTime.Now.ToShortDateString()}";
+                var importFailBody = $"The scheduled data extract return {cnt} rows for the extract date {executionDate.ToShortDateString()}";
                 await SendMail(importFailSubject, importFailBody, log);
-                throw new Exception();
+                throw new Exception($"No records imported for {executionDate} exception");
             }
             
             foreach (var analyticsEmail in analyticsEmails)
             {
                 //set the initial end date
                 var endDate = Convert.ToDateTime(analyticsEmail.StartDate).AddDays(analyticsEmail.NumberOfDays);
-                while (DateTime.Now.Date > endDate.Date)
+                while (executionDate.Date > endDate.Date)
                 {
                     log.Info($"StpList={analyticsEmail.StpList}, CcgList={analyticsEmail.CcgList}, ToEmailRecipients={analyticsEmail.ToEmailRecipients}, StartDate={analyticsEmail.StartDate}");
                     try
