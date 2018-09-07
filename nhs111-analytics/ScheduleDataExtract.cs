@@ -19,15 +19,15 @@ namespace NHS111.Cloud.Functions
         public static async Task Run([TimerTrigger("0 0 6 * * *")]TimerInfo timer, [Table("AnalyticsEmailTable", "Email", Connection = "AzureContainerConnection")]IQueryable<AnalyticsEmail> analyticsEmails, [Table("AnalyticsEmailTable", "Email", Connection = "AzureContainerConnection")]CloudTable outTable, TraceWriter log)
         {
             var executionDate = DateTime.Now;
-            log.Info($"C# Timer trigger function executed at: {executionDate}");
+            log.Info($"C# Timer trigger function executed at: {executionDate.ToString("yyyy-MM-dd")}");
 
-            log.Info($"Checking overnight data import has completed successfully for {executionDate.AddDays(-1).Date.ToShortDateString()}");
+            log.Info($"Checking overnight data import has completed successfully for {executionDate.AddDays(-1).ToString("yyyy-MM-dd")}");
             var cnt = ExtractAnalyticsData.Run(executionDate.AddDays(-1), log);
             if (cnt == 0)
             {
                 //send email to slack channel to raise error
                 var importFailSubject = "Data extract import failure";
-                var importFailBody = $"The scheduled data extract returned {cnt} rows for the extract date {executionDate.ToShortDateString()}";
+                var importFailBody = $"The scheduled data extract returned {cnt} rows for the extract date {executionDate.ToString("yyyy-MM-dd")}";
                 await SendMail(importFailSubject, importFailBody, log);
                 throw new Exception($"No records imported for {executionDate} exception");
             }
@@ -36,6 +36,7 @@ namespace NHS111.Cloud.Functions
             {
                 //set the initial end date
                 var endDate = Convert.ToDateTime(analyticsEmail.StartDate).AddDays(analyticsEmail.NumberOfDays);
+                var numberOfDays = analyticsEmail.NumberOfDays;
                 while (executionDate.Date > endDate.Date)
                 {
                     log.Info($"StpList={analyticsEmail.StpList}, CcgList={analyticsEmail.CcgList}, ToEmailRecipients={analyticsEmail.ToEmailRecipients}, StartDate={analyticsEmail.StartDate}");
@@ -43,10 +44,10 @@ namespace NHS111.Cloud.Functions
                     {
                         OrchestrateDailyDataSend.Run(JsonConvert.SerializeObject(analyticsEmail), log);
                         var updateAnalyticsEmail = await GetTableEntity(outTable, analyticsEmail.PartitionKey, analyticsEmail.RowKey);
-                        updateAnalyticsEmail.StartDate = Convert.ToDateTime(analyticsEmail.StartDate).AddDays(analyticsEmail.NumberOfDays).ToString("yyyy-MM-dd");
+                        updateAnalyticsEmail.StartDate = Convert.ToDateTime(analyticsEmail.StartDate).AddDays(numberOfDays).ToString("yyyy-MM-dd");
                         await UpdateTableEntity(outTable, updateAnalyticsEmail);
                         //set end data again to see if we need to send again
-                        endDate = endDate.AddDays(analyticsEmail.NumberOfDays);
+                        endDate = endDate.AddDays(numberOfDays);
                     }
                     catch (Exception e)
                     {
