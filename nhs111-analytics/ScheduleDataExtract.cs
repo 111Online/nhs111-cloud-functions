@@ -27,7 +27,7 @@ namespace NHS111.Cloud.Functions
             {
                 //send email to slack channel to raise error
                 var importFailSubject = "Data extract import failure";
-                var importFailBody = $"The scheduled data extract return {cnt} rows for the extract date {executionDate.ToShortDateString()}";
+                var importFailBody = $"The scheduled data extract returned {cnt} rows for the extract date {executionDate.ToShortDateString()}";
                 await SendMail(importFailSubject, importFailBody, log);
                 throw new Exception($"No records imported for {executionDate} exception");
             }
