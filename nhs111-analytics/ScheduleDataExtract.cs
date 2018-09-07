@@ -37,7 +37,7 @@ namespace NHS111.Cloud.Functions
                 //set the initial end date
                 var endDate = Convert.ToDateTime(analyticsEmail.StartDate).AddDays(analyticsEmail.NumberOfDays);
                 var numberOfDays = analyticsEmail.NumberOfDays;
-                while (executionDate.Date > endDate.Date)
+                while (executionDate.Date >= endDate.Date)
                 {
                     log.Info($"StpList={analyticsEmail.StpList}, CcgList={analyticsEmail.CcgList}, ToEmailRecipients={analyticsEmail.ToEmailRecipients}, StartDate={analyticsEmail.StartDate}");
                     try
