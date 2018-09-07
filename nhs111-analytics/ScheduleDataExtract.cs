@@ -48,6 +48,7 @@ namespace NHS111.Cloud.Functions
                         await UpdateTableEntity(outTable, updateAnalyticsEmail);
                         //set end data again to see if we need to send again
                         endDate = endDate.AddDays(numberOfDays);
+                        analyticsEmail.StartDate = updateAnalyticsEmail.StartDate;
                     }
                     catch (Exception e)
                     {
