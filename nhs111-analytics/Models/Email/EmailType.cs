@@ -10,6 +10,7 @@ namespace NHS111.Cloud.Functions.Models.Email
     {
         public static EmailType Referral = new EmailType { Name = "Referral", AccountKey = "nhs111OnlineReferralMailAccount", PasswordKey = "nhs111OnlineReferralMailPassword" };
         public static EmailType DataExtract = new EmailType { Name = "DataExtract", AccountKey = "nhs111OnlineMailAccount", PasswordKey = "nhs111OnlineMailPassword" };
+        public static EmailType DataPortal = new EmailType { Name = "DataPortal", AccountKey = "nhs111OnlineDataPortalMailAccount", PasswordKey = "nhs111OnlineDataPortalMailPassword" };
 
         public string Name { get; private set; }
 
@@ -28,6 +29,6 @@ namespace NHS111.Cloud.Functions.Models.Email
         }
 
         private EmailType() { }
-        private static readonly EmailType[] SupportedTypes = { Referral, DataExtract };
+        private static readonly EmailType[] SupportedTypes = { Referral, DataExtract, DataPortal };
     }
 }
