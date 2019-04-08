@@ -16,7 +16,7 @@ namespace NHS111.Cloud.Functions
     public static class ScheduleDataExtract
     {
         [FunctionName("ScheduleDataExtract")]
-        public static async Task Run([TimerTrigger("0 0 6 * * *")]TimerInfo timer, [Table("AnalyticsEmailTable", "Email", Connection = "AzureContainerConnection")]IQueryable<AnalyticsEmail> analyticsEmails, [Table("AnalyticsEmailTable", "Email", Connection = "AzureContainerConnection")]CloudTable outTable, TraceWriter log)
+        public static async Task Run([TimerTrigger("0 0 6 * * *"), Disable()]TimerInfo timer, [Table("AnalyticsEmailTable", "Email", Connection = "AzureContainerConnection")]IQueryable<AnalyticsEmail> analyticsEmails, [Table("AnalyticsEmailTable", "Email", Connection = "AzureContainerConnection")]CloudTable outTable, TraceWriter log)
         {
             var executionDate = DateTime.Now;
             log.Info($"C# Timer trigger function executed at: {executionDate.ToString("yyyy-MM-dd")}");
